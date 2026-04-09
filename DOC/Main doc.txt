@@ -1,0 +1,247 @@
+# Fotos: Scalable Cloud-Based Photo Sharing Web Application
+
+## 1. Introduction
+
+Fotos is a cloud-native web application designed to allow users to upload, browse, search, comment on, and rate event-based photos. The system follows an Instagram-like model with two roles: creators and consumers. The application is designed with scalability, cloud deployment, and modern web architecture principles in mind.
+
+---
+
+## 2. Objectives
+
+* Build a scalable web-based photo sharing system
+* Implement a RESTful backend API
+* Use cloud services for hosting and storage
+* Demonstrate scalability using CDN and cloud infrastructure
+* Provide a working deployed solution with a demonstration
+
+---
+
+## 3. System Architecture Overview
+
+The system follows a three-tier architecture:
+
+1. Frontend (Client Layer)
+2. Backend (Application Layer)
+3. Storage & Cloud Services (Data Layer)
+
+---
+
+## 4. Technologies Used
+
+### 4.1 Frontend
+
+* React.js (UI development)
+* HTML/CSS/JavaScript
+* Axios (API communication)
+* React Router (navigation)
+
+### 4.2 Backend
+
+* Node.js
+* Express.js (REST API framework)
+* JWT (authentication)
+
+### 4.3 Database
+
+* MongoDB Atlas (cloud database)
+* Mongoose (ODM for MongoDB)
+
+### 4.4 Cloud Services
+
+* AWS S3 (image storage)
+* AWS CloudFront (CDN for scalability)
+* AWS EC2 / Render (backend hosting)
+
+### 4.5 DevOps
+
+* GitHub (version control)
+* GitHub Actions (CI/CD pipeline)
+
+---
+
+## 5. System Features
+
+### 5.1 Creator Features
+
+* Upload event photos
+* Add metadata (title, caption, location, event name, tags)
+
+### 5.2 Consumer Features
+
+* View photos
+* Search photos
+* Comment on photos
+* Rate photos
+
+---
+
+## 6. Frontend Implementation
+
+The frontend is a React-based web application.
+
+### Key Components:
+
+* Home Page (photo gallery)
+* Login/Register Page
+* Upload Page
+* Photo Details Page
+* Search Page
+
+### How it works:
+
+* User interacts via browser
+* Axios sends HTTP requests to backend API
+* Data is rendered dynamically using React components
+
+---
+
+## 7. Backend Implementation
+
+The backend is built using Node.js and Express.
+
+### Structure:
+
+* Routes: Define API endpoints
+* Controllers: Handle request logic
+* Models: Define database schema
+* Middleware: Authentication, error handling
+
+### Example APIs:
+
+* POST /api/auth/login
+* POST /api/photos
+* GET /api/photos
+* POST /api/photos/:id/comments
+
+---
+
+## 8. Database Design
+
+### Collections:
+
+#### Users
+
+* name
+* email
+* password
+* role
+
+#### Photos
+
+* title
+* caption
+* location
+* eventName
+* imageUrl
+* uploadedBy
+
+#### Comments
+
+* photoId
+* userId
+* text
+
+#### Ratings
+
+* photoId
+* userId
+* value
+
+---
+
+## 9. Image Storage (AWS S3)
+
+### How it works:
+
+1. User uploads image from frontend
+2. Backend receives file using middleware (Multer)
+3. Image is uploaded to AWS S3 bucket
+4. S3 returns URL
+5. URL is stored in MongoDB
+
+---
+
+## 10. Scalability Implementation
+
+### Techniques used:
+
+* Cloud storage (S3 scales automatically)
+* CDN (CloudFront for fast delivery)
+* Stateless backend (can scale horizontally)
+
+---
+
+## 11. Authentication
+
+* JWT-based authentication
+* Role-based access (creator/consumer)
+* Protected routes for uploads
+
+---
+
+## 12. CI/CD Pipeline
+
+### Process:
+
+1. Code pushed to GitHub
+2. GitHub Actions runs:
+
+   * Install dependencies
+   * Build project
+   * Run tests
+3. Deploy to cloud automatically
+
+---
+
+## 13. Deployment
+
+### Frontend:
+
+* Hosted on AWS S3
+
+### Backend:
+
+* Hosted on AWS EC2 or Render
+
+### Database:
+
+* MongoDB Atlas (cloud hosted)
+
+---
+
+## 14. Testing
+
+* Manual testing of features
+* API testing using Postman
+
+---
+
+## 15. Limitations
+
+* Limited free-tier cloud resources
+* Basic search functionality
+* No advanced recommendation system
+
+---
+
+## 16. Future Improvements
+
+* AI-based image tagging
+* Advanced search filters
+* Real-time notifications
+* Mobile version
+
+---
+
+## 17. Conclusion
+
+EventGallery demonstrates a scalable, cloud-native web application using modern technologies. It successfully integrates frontend, backend, and cloud services to provide a functional and scalable solution.
+
+---
+
+## 18. References
+
+* AWS Documentation
+* MongoDB Atlas Documentation
+* React Documentation
+* Node.js Documentation

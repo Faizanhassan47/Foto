@@ -1,0 +1,75 @@
+eventgallery/
+│   │   ├── hooks/
+│   │   │   ├── useAuth.js
+│   │   │   └── useFetchPhotos.js
+│   │   ├── utils/
+│   │   │   ├── formatDate.js
+│   │   │   ├── validators.js
+│   │   │   └── constants.js
+│   │   ├── styles/
+│   │   │   ├── global.css
+│   │   │   ├── navbar.css
+│   │   │   ├── photoCard.css
+│   │   │   └── forms.css
+│   │   ├── App.jsx
+│   │   ├── main.jsx
+│   │   └── routes.jsx
+│   ├── .env
+│   ├── package.json
+│   └── vite.config.js
+│
+├── backend/
+│   ├── src/
+│   │   ├── config/
+│   │   │   ├── db.js
+│   │   │   ├── s3.js
+│   │   │   └── env.js
+│   │   ├── controllers/
+│   │   │   ├── authController.js
+│   │   │   ├── photoController.js
+│   │   │   ├── commentController.js
+│   │   │   └── ratingController.js
+│   │   ├── middleware/
+│   │   │   ├── authMiddleware.js
+│   │   │   ├── roleMiddleware.js
+│   │   │   ├── uploadMiddleware.js
+│   │   │   └── errorMiddleware.js
+│   │   ├── models/
+│   │   │   ├── User.js
+│   │   │   ├── Photo.js
+│   │   │   ├── Comment.js
+│   │   │   └── Rating.js
+│   │   ├── routes/
+│   │   │   ├── authRoutes.js
+│   │   │   ├── photoRoutes.js
+│   │   │   ├── commentRoutes.js
+│   │   │   └── ratingRoutes.js
+│   │   ├── services/
+│   │   │   ├── authService.js
+│   │   │   ├── photoService.js
+│   │   │   ├── commentService.js
+│   │   │   ├── ratingService.js
+│   │   │   └── storageService.js
+│   │   ├── utils/
+│   │   │   ├── generateToken.js
+│   │   │   ├── logger.js
+│   │   │   └── validators.js
+│   │   ├── app.js
+│   │   └── server.js
+│   ├── tests/
+│   │   ├── auth.test.js
+│   │   ├── photo.test.js
+│   │   └── comment.test.js
+│   ├── .env
+│   ├── package.json
+│   └── nodemon.json
+│
+├── docs/
+│   ├── architecture-notes.md
+│   ├── api-spec.md
+│   ├── deployment-notes.md
+│   └── screenshots/
+│
+├── .gitignore
+├── README.md
+└── docker-compose.yml

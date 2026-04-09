@@ -1,0 +1,33 @@
+[User Opens Login Page]
+          |
+          v
+ [Enter Email + Password]
+          |
+          v
+[Frontend Sends Login Request]
+          |
+          v
+ [Backend Verifies User Data]
+          |
+          +----------------------+
+          |                      |
+          v                      v
+ [Invalid Credentials]      [Valid Credentials]
+          |                      |
+          v                      v
+ [Return Error Message]    [Generate JWT Token]
+                                 |
+                                 v
+                    [Send Token + User Role to Frontend]
+                                 |
+                                 v
+                       [Store Token in Local Storage]
+                                 |
+                                 v
+                    [Grant Access Based on User Role]
+                                 |
+                    +------------+-------------+
+                    |                          |
+                    v                          v
+          [Creator Access]             [Consumer Access]
+   (Upload page, My uploads)   (Gallery, Search, Comments, Ratings)
