@@ -1,49 +1,78 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import api, { getApiError } from '../api/client';
 
-export function useFetchPhotos(query = '') {
+export function useFetchPhotos(query = '', sort = 'newest') {
   const [photos, setPhotos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  
+  // Ref to track parameters for reset
+  const paramsRef = useRef({ query, sort });
 
+  // Reset when query or sort changes
   useEffect(() => {
-    let isMounted = true;
-
-    async function loadPhotos() {
-      setIsLoading(true);
-      setError('');
-
-      try {
-        const response = await api.get('/photos', {
-          params: query ? { q: query } : {}
-        });
-
-        if (isMounted) {
-          setPhotos(response.data.photos);
-        }
-      } catch (requestError) {
-        if (isMounted) {
-          setError(getApiError(requestError, 'Unable to load photos right now.'));
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
+    if (paramsRef.current.query !== query || paramsRef.current.sort !== sort) {
+      setPage(1);
+      setPhotos([]);
+      setHasMore(true);
+      paramsRef.current = { query, sort };
     }
+  }, [query, sort]);
 
-    loadPhotos();
+  const loadPhotos = useCallback(async (isInitial = false) => {
+    const currentPage = isInitial ? 1 : page;
+    setIsLoading(true);
+    setError('');
 
-    return () => {
-      isMounted = false;
-    };
-  }, [query, refreshKey]);
+    try {
+      const response = await api.get('/photos', {
+        params: { 
+          q: query,
+          sort: sort,
+          page: currentPage,
+          limit: 12
+        }
+      });
+
+      const newPhotos = response.data.photos;
+      
+      setPhotos(prev => isInitial ? newPhotos : [...prev, ...newPhotos]);
+      setHasMore(newPhotos.length === 12);
+      if (!isInitial) {
+        setPage(prev => prev + 1);
+      } else {
+        setPage(2);
+      }
+    } catch (requestError) {
+      setError(getApiError(requestError, 'Unable to load photos right now.'));
+    } finally {
+      setIsLoading(false);
+    }
+  }, [query, sort, page]);
+
+  // Initial load
+  useEffect(() => {
+    loadPhotos(true);
+  }, [query, sort]);
+
+  const fetchNextPage = useCallback(() => {
+    if (!isLoading && hasMore) {
+      loadPhotos(false);
+    }
+  }, [isLoading, hasMore, loadPhotos]);
 
   return {
     photos,
     isLoading,
     error,
-    reload: () => setRefreshKey((current) => current + 1)
+    hasMore,
+    fetchNextPage,
+    reload: () => {
+      setPage(1);
+      setPhotos([]);
+      loadPhotos(true);
+    }
   };
 }

@@ -3,6 +3,9 @@ import { createNewPhoto, getPhotoById, listPhotos } from '../services/photoServi
 export async function getPhotos(req, res) {
   const photos = await listPhotos({
     query: req.query.q,
+    sort: req.query.sort || 'newest',
+    page: Number(req.query.page || 1),
+    limit: Number(req.query.limit || 12),
     viewerId: req.user?.id || null
   });
 

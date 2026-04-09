@@ -1,4 +1,5 @@
 services:
+  # Backend API (Web Service - Free Tier)
   - type: web
     name: fotos-api
     runtime: node
@@ -16,18 +17,31 @@ services:
       - key: STORAGE_PROVIDER
         value: s3
       - key: CLIENT_ORIGIN
-        sync: false
+        sync: false # Needs to be the Frontend URL after first deployment
       - key: JWT_SECRET
-        sync: false
+        generateValue: true
       - key: MONGODB_URI
         sync: false
       - key: AWS_REGION
         sync: false
       - key: AWS_S3_BUCKET
         sync: false
-      - key: AWS_CLOUDFRONT_URL
-        sync: false
       - key: AWS_ACCESS_KEY_ID
         sync: false
       - key: AWS_SECRET_ACCESS_KEY
         sync: false
+
+  # Frontend (Static Site - Always Free)
+  - type: static
+    name: fotos-app
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishDir: dist
+    autoDeploy: true
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: fotos-api
+          property: host
+        addition: /api

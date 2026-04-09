@@ -1,62 +1,57 @@
-# Fotos API Spec
+# Fotos API Specification
 
 Base path: `/api`
 
-## Health
+## Health & Status
 
 - `GET /health`
-  - Returns service status and active data/storage providers
+  - Returns service status, active data/storage providers, and connectivity health.
 
-## Auth
+## Authentication
 
 - `POST /auth/register`
-  - Body: `name`, `email`, `password`, `role`
-  - Returns: `token`, `user`
+  - Body: `name`, `email`, `password`, `role` (`creator` | `consumer`)
+  - Returns: `token`, `user` object
 
 - `POST /auth/login`
   - Body: `email`, `password`
-  - Returns: `token`, `user`
+  - Returns: `token`, `user` object
 
 - `GET /auth/me`
-  - Auth required
-  - Returns current authenticated user
+  - **Auth required**
+  - Returns current authenticated user record.
 
-## Photos
+## Photos Gallery
 
 - `GET /photos`
-  - Optional query: `q`
-  - Returns gallery photo cards
+  - Query parameters:
+    - `q`: Search string (searches title, location, event, tags).
+    - `sort`: Sorting criteria (`newest` | `rating`). Default: `newest`.
+    - `page`: Page number for infinite scroll. Default: `1`.
+    - `limit`: Photos per page. Default: `12`.
+  - Returns: `photos` array (serialized with `averageRating`, `commentsCount`, etc.)
 
 - `GET /photos/:photoId`
-  - Returns a single photo with comments and rating summary fields
+  - Returns a single photo object including its full comment history and rating summary.
 
 - `POST /photos`
-  - Auth required
-  - Creator role required
-  - Multipart form fields:
-    - `title`
-    - `caption`
-    - `location`
-    - `eventName`
-    - `tags`
-    - `image`
+  - **Auth required** (Creator role only)
+  - Multipart form (File upload):
+    - `image`: Binary file (JPEG/PNG)
+    - `title`, `caption`, `location`, `eventName`, `tags`
+  - Returns: Newly created photo object.
 
-## Comments
-
-- `GET /comments/photo/:photoId`
-  - Returns comments for a photo
+## Social Interactions
 
 - `POST /comments/photo/:photoId`
-  - Auth required
-  - Consumer role required
+  - **Auth required** (Consumer role only)
   - Body: `text`
-
-## Ratings
+  - Returns: Created comment record.
 
 - `GET /ratings/photo/:photoId`
-  - Returns average rating, distribution, viewer rating, and count
+  - Returns: `averageRating`, `ratingsCount`, and `distribution`.
 
 - `POST /ratings/photo/:photoId`
-  - Auth required
-  - Consumer role required
-  - Body: `value` from `1` to `5`
+  - **Auth required** (Consumer role only)
+  - Body: `value` (1-5)
+  - **Note**: This is an upsert operation. One rating per user per photo.

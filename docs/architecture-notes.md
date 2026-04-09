@@ -1,61 +1,49 @@
-# Fotos Architecture Notes
+# Fotos System Architecture
 
-## Runtime Modes
+Fotos is a cloud-native platform designed for high-concurrency event photo sharing. It utilizes a three-tier architecture with pluggable persistence layers.
 
-The backend supports two interchangeable runtime layers:
+## 1. System Topology
 
-- Local mode: JSON persistence in `backend/data/db.json` and local uploads in `backend/uploads/`
-- Cloud mode: MongoDB Atlas for data and AWS S3 for image objects
+```mermaid
+graph TD
+    Client[React Frontend] -- HTTPS / REST --> API[Node.js Express API]
+    API -- JWT Auth --> DB[(MongoDB Atlas)]
+    API -- Buffer Stream --> S3[[AWS S3 Storage]]
+    S3 -- Source --> CF[AWS CloudFront CDN]
+    CF -- Edge Delivery --> Client
+```
 
-The mode is selected through environment variables:
+## 2. Infrastructure Modes
 
-- `DATA_PROVIDER=local|mongo`
-- `STORAGE_PROVIDER=local|s3`
+The application dynamically selects providers based on environment availability:
 
-If those variables are omitted, the backend auto-selects:
+- **Local Discovery**: Uses JSON persistence and local file system uploads.
+- **Enterprise Cloud**: Uses MongoDB Atlas for metadata and AWS S3/CloudFront for object delivery.
 
-- `mongo` when `MONGODB_URI` is present
-- `s3` when `AWS_S3_BUCKET` and `AWS_REGION` are present
+| Provider | Local Configuration | Cloud Configuration |
+| :--- | :--- | :--- |
+| **Data** | `backend/data/db.json` | `MONGODB_URI` (Atlas) |
+| **Storage** | `backend/uploads/` | `AWS_S3_BUCKET` (S3) |
+| **Delivery** | direct host | `AWS_CLOUDFRONT_URL` (CDN) |
 
-## Backend Layers
+## 3. Performance & Scalability
 
-- `src/routes/`: REST endpoints
-- `src/controllers/`: request/response orchestration
-- `src/services/`: app logic, validation, serialization
-- `src/data/`: local and MongoDB provider implementations
-- `src/storage/`: local and S3 file persistence
-- `src/middleware/`: auth, roles, upload validation, errors
+### 3.1 Masonry Layout (Frontend)
+To handle varying photo aspect ratios without layout shift, we use a CSS-columns based masonry grid. This provides high-performance rendering compared to JS-heavy masonry libraries.
 
-## MongoDB Atlas Path
+### 3.2 Denormalized Ratings (Backend)
+To support **Top Rated** sorting across millions of records without complex aggregation overhead, we implement a denormalization strategy:
+- Every `Photo` record stores `averageRating` and `ratingsCount`.
+- These fields are updated atomically via Mongoose aggregation whenever a user submits a rating.
+- This allows the primary gallery query to stay O(1) for sorting.
 
-When `DATA_PROVIDER=mongo`, the backend connects with Mongoose and stores:
+### 3.3 CDN Rewriting
+The `resolveAssetUrl` utility automatically prioritizes CDN distribution points (CloudFront) if configured, reducing latency and offloading traffic from the API server.
 
-- `users`
-- `photos`
-- `comments`
-- `ratings`
+## 4. Technology Stack
 
-The Mongo provider keeps the API response shape aligned with the local mode, so the frontend does not need special cloud handling.
-
-## AWS S3 and CloudFront Path
-
-When `STORAGE_PROVIDER=s3`, Multer uses memory storage and the backend uploads the image buffer to S3 through the AWS SDK.
-
-Returned image URLs resolve in this order:
-
-1. `AWS_CLOUDFRONT_URL`
-2. `AWS_S3_PUBLIC_BASE_URL`
-3. Default regional S3 URL
-
-That makes the same API work for:
-
-- direct S3 delivery
-- CloudFront-backed delivery
-- S3-compatible endpoints
-
-## Scalability Notes
-
-- The API remains stateless and token-based
-- Images live outside the app server when S3 is enabled
-- CDN delivery is supported through CloudFront URL rewriting
-- MongoDB Atlas replaces the local JSON file for shared persistent storage
+- **UI**: React 18, Framer Motion (Animations), Lucide (Icons)
+- **Design**: HSL-based Design System with Glassmorphism
+- **Backend**: Node.js, Express, JWT, Multer
+- **Persistence**: Mongoose (ODM), MongoDB Atlas
+- **DevOps**: GitHub Actions (CI/CD), Render/Amazon EC2 (Deployment)

@@ -1,247 +1,52 @@
-# Fotos: Scalable Cloud-Based Photo Sharing Web Application
+# Fotos: Premium Cloud-Native Photo Ecology
 
-## 1. Introduction
+## 1. Executive Summary
+Fotos is an advanced, scalable photo-sharing ecosystem designed for event creators and consumers. Built with a "Cloud-First" philosophy, it leverages state-of-the-art technologies to provide a high-performance, immersive experience for capturing and reliving event moments.
 
-Fotos is a cloud-native web application designed to allow users to upload, browse, search, comment on, and rate event-based photos. The system follows an Instagram-like model with two roles: creators and consumers. The application is designed with scalability, cloud deployment, and modern web architecture principles in mind.
+## 2. Core Objectives
+- **Scalability**: Seamless horizontal scaling via stateless architecture and CDN integration.
+- **Experience**: Premium UI/UX featuring Masonry layouts, smooth animations, and immersive viewing.
+- **Security**: Robust JWT-based authentication with granular role-based access control.
+- **Persistence**: Hybrid persistence layer supporting both local development and enterprise-grade MongoDB Atlas clusters.
 
----
+## 3. High-Level Flow
 
-## 2. Objectives
+```mermaid
+sequenceDiagram
+    participant U as User (Creator/Consumer)
+    participant F as React Frontend
+    participant B as Express API
+    participant D as MongoDB Atlas
+    participant S as AWS S3 / CloudFront
 
-* Build a scalable web-based photo sharing system
-* Implement a RESTful backend API
-* Use cloud services for hosting and storage
-* Demonstrate scalability using CDN and cloud infrastructure
-* Provide a working deployed solution with a demonstration
+    U->>F: Interact (Upload/Search/Rate)
+    F->>B: REST Request + JWT
+    B->>D: CRUD Metadata
+    B->>S: Stream Assets
+    S-->>U: Delivery via CDN Edge
+```
 
----
+## 4. Key Feature Matrix
 
-## 3. System Architecture Overview
+| Feature | Description |
+| :--- | :--- |
+| **Immersive Gallery** | Responsive Masonry grid with Pinterest-style height variation. |
+| **Infinite Scroll** | High-performance intersection-based content loading. |
+| **Professional Lightbox** | Full-screen immersive viewing with backdrop-blur and metadata. |
+| **Advanced Search** | Real-time multi-field searching across events, titles, and tags. |
+| **Rating System** | Denormalized star rating with O(1) performance for Top Rated sorting. |
 
-The system follows a three-tier architecture:
+## 5. Deployment Topology
 
-1. Frontend (Client Layer)
-2. Backend (Application Layer)
-3. Storage & Cloud Services (Data Layer)
+- **Frontend**: Distributed via AWS S3 and accelerated by CloudFront CDN.
+- **Backend API**: Hosted on Render / AWS EC2 with auto-scaling capabilities.
+- **Database**: Global multi-cloud distribution via MongoDB Atlas.
+- **Storage**: Highly durable object storage via AWS S3.
 
----
-
-## 4. Technologies Used
-
-### 4.1 Frontend
-
-* React.js (UI development)
-* HTML/CSS/JavaScript
-* Axios (API communication)
-* React Router (navigation)
-
-### 4.2 Backend
-
-* Node.js
-* Express.js (REST API framework)
-* JWT (authentication)
-
-### 4.3 Database
-
-* MongoDB Atlas (cloud database)
-* Mongoose (ODM for MongoDB)
-
-### 4.4 Cloud Services
-
-* AWS S3 (image storage)
-* AWS CloudFront (CDN for scalability)
-* AWS EC2 / Render (backend hosting)
-
-### 4.5 DevOps
-
-* GitHub (version control)
-* GitHub Actions (CI/CD pipeline)
+## 6. Development & DevOps
+- **Branching**: Git-based workflow.
+- **Pipeline**: Automated CI/CD via GitHub Actions (linting, testing, and deployment).
+- **Environment**: Strict 12-factor app configuration via `.env`.
 
 ---
-
-## 5. System Features
-
-### 5.1 Creator Features
-
-* Upload event photos
-* Add metadata (title, caption, location, event name, tags)
-
-### 5.2 Consumer Features
-
-* View photos
-* Search photos
-* Comment on photos
-* Rate photos
-
----
-
-## 6. Frontend Implementation
-
-The frontend is a React-based web application.
-
-### Key Components:
-
-* Home Page (photo gallery)
-* Login/Register Page
-* Upload Page
-* Photo Details Page
-* Search Page
-
-### How it works:
-
-* User interacts via browser
-* Axios sends HTTP requests to backend API
-* Data is rendered dynamically using React components
-
----
-
-## 7. Backend Implementation
-
-The backend is built using Node.js and Express.
-
-### Structure:
-
-* Routes: Define API endpoints
-* Controllers: Handle request logic
-* Models: Define database schema
-* Middleware: Authentication, error handling
-
-### Example APIs:
-
-* POST /api/auth/login
-* POST /api/photos
-* GET /api/photos
-* POST /api/photos/:id/comments
-
----
-
-## 8. Database Design
-
-### Collections:
-
-#### Users
-
-* name
-* email
-* password
-* role
-
-#### Photos
-
-* title
-* caption
-* location
-* eventName
-* imageUrl
-* uploadedBy
-
-#### Comments
-
-* photoId
-* userId
-* text
-
-#### Ratings
-
-* photoId
-* userId
-* value
-
----
-
-## 9. Image Storage (AWS S3)
-
-### How it works:
-
-1. User uploads image from frontend
-2. Backend receives file using middleware (Multer)
-3. Image is uploaded to AWS S3 bucket
-4. S3 returns URL
-5. URL is stored in MongoDB
-
----
-
-## 10. Scalability Implementation
-
-### Techniques used:
-
-* Cloud storage (S3 scales automatically)
-* CDN (CloudFront for fast delivery)
-* Stateless backend (can scale horizontally)
-
----
-
-## 11. Authentication
-
-* JWT-based authentication
-* Role-based access (creator/consumer)
-* Protected routes for uploads
-
----
-
-## 12. CI/CD Pipeline
-
-### Process:
-
-1. Code pushed to GitHub
-2. GitHub Actions runs:
-
-   * Install dependencies
-   * Build project
-   * Run tests
-3. Deploy to cloud automatically
-
----
-
-## 13. Deployment
-
-### Frontend:
-
-* Hosted on AWS S3
-
-### Backend:
-
-* Hosted on AWS EC2 or Render
-
-### Database:
-
-* MongoDB Atlas (cloud hosted)
-
----
-
-## 14. Testing
-
-* Manual testing of features
-* API testing using Postman
-
----
-
-## 15. Limitations
-
-* Limited free-tier cloud resources
-* Basic search functionality
-* No advanced recommendation system
-
----
-
-## 16. Future Improvements
-
-* AI-based image tagging
-* Advanced search filters
-* Real-time notifications
-* Mobile version
-
----
-
-## 17. Conclusion
-
-EventGallery demonstrates a scalable, cloud-native web application using modern technologies. It successfully integrates frontend, backend, and cloud services to provide a functional and scalable solution.
-
----
-
-## 18. References
-
-* AWS Documentation
-* MongoDB Atlas Documentation
-* React Documentation
-* Node.js Documentation
+*Updated: 2026-04-09 | Version 2.0 (Premium Upgrade)*

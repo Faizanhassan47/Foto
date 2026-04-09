@@ -88,10 +88,25 @@ export async function createUserRecord(input) {
   return serializeRecord(user);
 }
 
-export async function queryPhotoGraph({ query = '' } = {}) {
+export async function queryPhotoGraph({ query = '', sort = 'newest', page = 1, limit = 12 } = {}) {
   await connectDatabase();
 
-  const photos = await PhotoModel.find(buildSearchFilter(query)).sort({ createdAt: -1 }).lean();
+  const skip = (Math.max(1, page) - 1) * limit;
+  const sortOptions = {};
+
+  if (sort === 'rating') {
+    sortOptions.averageRating = -1;
+    sortOptions.createdAt = -1;
+  } else {
+    sortOptions.createdAt = -1;
+  }
+
+  const photos = await PhotoModel.find(buildSearchFilter(query))
+    .sort(sortOptions)
+    .skip(skip)
+    .limit(limit)
+    .lean();
+
   const photoIds = photos.map((photo) => photo._id);
   const comments = photoIds.length
     ? await CommentModel.find({ photoId: { $in: photoIds } }).sort({ createdAt: -1 }).lean()
@@ -166,6 +181,25 @@ export async function upsertRatingRecord({ photoId, userId, value }) {
       setDefaultsOnInsert: true
     }
   );
+
+  // Denormalize: Recalculate average rating for the photo
+  const stats = await RatingModel.aggregate([
+    { $match: { photoId: new mongoose.Types.ObjectId(photoId) } },
+    {
+      $group: {
+        _id: '$photoId',
+        averageRating: { $avg: '$value' },
+        ratingsCount: { $sum: 1 }
+      }
+    }
+  ]);
+
+  if (stats.length) {
+    await PhotoModel.findByIdAndUpdate(photoId, {
+      averageRating: Number(stats[0].averageRating.toFixed(1)),
+      ratingsCount: stats[0].ratingsCount
+    });
+  }
 
   return serializeRecord(rating);
 }

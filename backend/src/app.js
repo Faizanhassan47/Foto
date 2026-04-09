@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import cors from 'cors';
 import express from 'express';
 import authRoutes from './routes/authRoutes.js';
@@ -22,11 +23,23 @@ if (usesLocalUploads()) {
   app.use('/uploads', express.static(env.uploadDir));
 }
 
-app.get('/api/health', (_req, res) => {
+app.get('/api/health', async (_req, res) => {
+  const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+  
   res.json({
     status: 'ok',
-    dataProvider: env.dataProvider,
-    storageProvider: env.storageProvider
+    timestamp: new Date().toISOString(),
+    services: {
+      database: {
+        provider: env.dataProvider,
+        status: dbStatus
+      },
+      storage: {
+        provider: env.storageProvider,
+        status: 'active'
+      }
+    },
+    version: '2.0.0-premium'
   });
 });
 

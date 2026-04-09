@@ -68,6 +68,15 @@ const photoSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true
+    },
+    averageRating: {
+      type: Number,
+      default: null,
+      index: true
+    },
+    ratingsCount: {
+      type: Number,
+      default: 0
     }
   },
   {

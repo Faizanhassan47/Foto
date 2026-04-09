@@ -58,16 +58,15 @@ function matchSearch(photo, query) {
   return haystack.includes(query);
 }
 
-export async function listPhotos({ query = '', viewerId = null } = {}) {
+export async function listPhotos({ query = '', sort = 'newest', page = 1, limit = 12, viewerId = null } = {}) {
   const database = await dataProvider.queryPhotoGraph({
-    query
+    query,
+    sort,
+    page,
+    limit
   });
-  const normalizedQuery = String(query || '').trim().toLowerCase();
-  const filteredPhotos = normalizedQuery
-    ? database.photos.filter((photo) => matchSearch(photo, normalizedQuery))
-    : database.photos;
 
-  return sortNewestFirst(filteredPhotos).map((photo) => serializePhoto(photo, database, viewerId));
+  return database.photos.map((photo) => serializePhoto(photo, database, viewerId));
 }
 
 export async function getPhotoById(photoId, viewerId = null) {
