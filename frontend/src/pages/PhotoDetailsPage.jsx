@@ -10,8 +10,10 @@ import {
   Tag as TagIcon,
   MessageCircle,
   BarChart3,
-  Send
+  Send,
+  Heart
 } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 import api, { getApiError, resolveAssetUrl } from '../api/client';
 import { useAuth } from '../hooks/useAuth';
 import { formatDate } from '../utils/formatDate';
@@ -69,28 +71,49 @@ export function PhotoDetailsPage() {
 
   async function handleCommentSubmit(event) {
     event.preventDefault();
-    if (!commentText.trim()) return;
-    setIsSubmittingComment(true);
+    if (!commentText.trim() || !user) return;
+    
+    // Optimistic Update
+    const optimisticComment = {
+      id: `temp-${Date.now()}`,
+      text: commentText,
+      createdAt: new Date().toISOString(),
+      user: { name: user.name, id: user.id }
+    };
+
+    setPhoto(prev => ({
+      ...prev,
+      comments: [optimisticComment, ...prev.comments]
+    }));
+    setCommentText('');
+
     setError('');
     try {
-      await api.post(`/comments/photo/${photoId}`, { text: commentText });
-      setCommentText('');
+      await api.post(`/comments/photo/${photoId}`, { text: optimisticComment.text });
       await refreshPhoto();
     } catch (requestError) {
+      // Rollback on failure
+      setPhoto(prev => ({
+        ...prev,
+        comments: prev.comments.filter(c => c.id !== optimisticComment.id)
+      }));
       setError(getApiError(requestError, 'Unable to post comment.'));
-    } finally {
-      setIsSubmittingComment(false);
     }
   }
 
-  async function handleRatingSubmit(event) {
-    event.preventDefault();
+  async function handleRatingSubmit(newValue) {
+    if (!user || user.role !== 'consumer') return;
+    
+    const oldValue = ratingValue;
+    setRatingValue(String(newValue));
     setIsSubmittingRating(true);
     setError('');
+    
     try {
-      await api.post(`/ratings/photo/${photoId}`, { value: Number(ratingValue) });
+      await api.post(`/ratings/photo/${photoId}`, { value: newValue });
       await refreshPhoto();
     } catch (requestError) {
+      setRatingValue(oldValue);
       setError(getApiError(requestError, 'Unable to save rating.'));
     } finally {
       setIsSubmittingRating(false);
@@ -120,6 +143,14 @@ export function PhotoDetailsPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
+      <Helmet>
+        <title>{photo.title} | Fotos Gallery</title>
+        <meta name="description" content={photo.caption || `View this amazing photo from ${photo.eventName}`} />
+        <meta property="og:title" content={photo.title} />
+        <meta property="og:image" content={resolveAssetUrl(photo.imageUrl)} />
+        <meta property="og:description" content={photo.caption || `Event photo from ${photo.eventName}`} />
+        <meta name="twitter:card" content="summary_large_image" />
+      </Helmet>
       <Link to="/" className="button button--ghost" style={{ width: 'fit-content' }}>
         <ChevronLeft size={18} />
         Back to Gallery
@@ -215,23 +246,31 @@ export function PhotoDetailsPage() {
 
             {isAuthenticated && user?.role === 'consumer' ? (
               <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '1.5rem' }}>
-                <form className="inline-form" onSubmit={handleRatingSubmit} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end' }}>
-                  <label className="field" style={{ flex: 1 }}>
-                    <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>YOUR RATING</span>
-                    <select
-                      value={ratingValue}
-                      onChange={(e) => setRatingValue(e.target.value)}
-                      style={{ marginTop: '0.5rem' }}
+                <p style={{ fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.8rem', letterSpacing: '0.05em' }}>YOUR RATING</p>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <motion.button
+                      key={star}
+                      whileHover={{ scale: 1.2 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => handleRatingSubmit(star)}
+                      disabled={isSubmittingRating}
+                      style={{ color: star <= Number(ratingValue) ? 'var(--accent)' : 'var(--text-muted)' }}
                     >
-                      {[1, 2, 3, 4, 5].map((v) => (
-                        <option key={v} value={v}>{v} Stars</option>
-                      ))}
-                    </select>
-                  </label>
-                  <button type="submit" className="button button--primary" disabled={isSubmittingRating}>
-                    {isSubmittingRating ? 'Saving...' : 'Rate Now'}
-                  </button>
-                </form>
+                      <motion.div
+                        animate={star <= Number(ratingValue) ? { scale: [1, 1.4, 1] } : {}}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <Heart 
+                          size={32} 
+                          fill={star <= Number(ratingValue) ? 'currentColor' : 'none'} 
+                          strokeWidth={2}
+                        />
+                      </motion.div>
+                    </motion.button>
+                  ))}
+                </div>
+                {isSubmittingRating && <p className="muted" style={{ fontSize: '0.75rem', marginTop: '0.5rem' }}>Saving...</p>}
               </div>
             ) : null}
 

@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import path from 'node:path';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { env } from '../config/env.js';
+import { getCloudinary } from '../config/cloudinary.js';
 import { getS3Client } from '../config/s3.js';
 import { ensureStorage } from '../services/storageService.js';
 import { HttpError } from '../utils/httpError.js';
@@ -50,6 +51,30 @@ export function usesLocalUploads() {
   return env.storageProvider === 'local';
 }
 
+async function uploadToCloudinary(file) {
+  const cloudinary = getCloudinary();
+
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: 'fotos',
+        resource_type: 'auto',
+        use_filename: true,
+        unique_filename: true,
+        overwrite: false
+      },
+      (error, result) => {
+        if (error) {
+          return reject(new HttpError(500, `Cloudinary upload failed: ${error.message}`));
+        }
+        resolve(result.secure_url);
+      }
+    );
+
+    uploadStream.end(file.buffer);
+  });
+}
+
 export async function persistUploadedFile(file) {
   if (!file) {
     throw new HttpError(400, 'Please upload an image file.');
@@ -61,6 +86,14 @@ export async function persistUploadedFile(file) {
     }
 
     return `/uploads/${file.filename}`;
+  }
+
+  if (env.storageProvider === 'cloudinary') {
+    if (!file.buffer) {
+      throw new Error('Cloudinary uploads require a memory-backed file buffer.');
+    }
+
+    return uploadToCloudinary(file);
   }
 
   if (!file.buffer) {

@@ -24,8 +24,12 @@ function resolveStorageProvider() {
     .trim()
     .toLowerCase();
 
-  if (explicitProvider === 's3' || explicitProvider === 'local') {
+  if (explicitProvider === 's3' || explicitProvider === 'local' || explicitProvider === 'cloudinary') {
     return explicitProvider;
+  }
+
+  if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY) {
+    return 'cloudinary';
   }
 
   return process.env.AWS_S3_BUCKET && process.env.AWS_REGION ? 's3' : 'local';
@@ -41,6 +45,11 @@ export const env = {
   dataProvider: resolveDataProvider(),
   storageProvider: resolveStorageProvider(),
   mongodbUri: process.env.MONGODB_URI || '',
+  cloudinary: {
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME || '',
+    apiKey: process.env.CLOUDINARY_API_KEY || '',
+    apiSecret: process.env.CLOUDINARY_API_SECRET || ''
+  },
   awsRegion: process.env.AWS_REGION || '',
   awsS3Bucket: process.env.AWS_S3_BUCKET || '',
   awsS3PublicBaseUrl: normalizeBaseUrl(process.env.AWS_S3_PUBLIC_BASE_URL),

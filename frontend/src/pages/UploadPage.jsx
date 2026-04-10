@@ -7,27 +7,35 @@ import api, { getApiError } from '../api/client';
 export function UploadPage() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
-    title: '',
-    caption: '',
     location: '',
     eventName: '',
-    tags: ''
+    tags: '',
+    caption: ''
   });
-  const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(null);
+  const [files, setFiles] = useState([]); // Array of { file, preview, status: 'pending' | 'uploading' | 'success' | 'error', error: '' }
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDragActive, setIsDragActive] = useState(false);
 
+  const addFiles = useCallback((selectedFiles) => {
+    const newFiles = Array.from(selectedFiles)
+      .filter(file => file.type.startsWith('image/'))
+      .map(file => ({
+        file,
+        id: Math.random().toString(36).substr(2, 9),
+        preview: URL.createObjectURL(file),
+        status: 'pending',
+        error: ''
+      }));
+    
+    setFiles(prev => [...prev, ...newFiles]);
+  }, []);
+
   useEffect(() => {
-    if (!file) {
-      setPreview(null);
-      return;
-    }
-    const objectUrl = URL.createObjectURL(file);
-    setPreview(objectUrl);
-    return () => URL.revokeObjectURL(objectUrl);
-  }, [file]);
+    return () => {
+      files.forEach(f => URL.revokeObjectURL(f.preview));
+    };
+  }, [files]);
 
   const onDragOver = useCallback((e) => {
     e.preventDefault();
@@ -42,43 +50,68 @@ export function UploadPage() {
   const onDrop = useCallback((e) => {
     e.preventDefault();
     setIsDragActive(false);
-    const droppedFile = e.dataTransfer.files?.[0];
-    if (droppedFile && droppedFile.type.startsWith('image/')) {
-      setFile(droppedFile);
+    if (e.dataTransfer.files?.length) {
+      addFiles(e.dataTransfer.files);
     }
-  }, []);
+  }, [addFiles]);
+
+  const removeFile = (id) => {
+    setFiles(prev => {
+      const fileToRemove = prev.find(f => f.id === id);
+      if (fileToRemove) URL.revokeObjectURL(fileToRemove.preview);
+      return prev.filter(f => f.id !== id);
+    });
+  };
 
   async function handleSubmit(event) {
     event.preventDefault();
     setError('');
 
-    if (!form.title.trim() || !form.location.trim() || !form.eventName.trim()) {
-      setError('Title, location, and event name are required.');
+    if (!form.location.trim() || !form.eventName.trim()) {
+      setError('Location and event name are required for the batch.');
       return;
     }
 
-    if (!file) {
-      setError('Please choose an image to upload.');
+    if (!files.length) {
+      setError('Please add at least one photo.');
       return;
     }
-
-    const payload = new FormData();
-    payload.append('title', form.title);
-    payload.append('caption', form.caption);
-    payload.append('location', form.location);
-    payload.append('eventName', form.eventName);
-    payload.append('tags', form.tags);
-    payload.append('image', file);
 
     setIsSubmitting(true);
 
-    try {
-      const response = await api.post('/photos', payload);
-      navigate(`/photos/${response.data.photo.id}`);
-    } catch (requestError) {
-      setError(getApiError(requestError, 'Upload failed.'));
-    } finally {
-      setIsSubmitting(false);
+    let successCount = 0;
+
+    for (let i = 0; i < files.length; i++) {
+      const currentFile = files[i];
+      if (currentFile.status === 'success') continue;
+
+      setFiles(prev => prev.map(f => f.id === currentFile.id ? { ...f, status: 'uploading' } : f));
+
+      const payload = new FormData();
+      // Use filename as title if none provided
+      payload.append('title', currentFile.file.name.replace(/\.[^/.]+$/, "")); 
+      payload.append('caption', form.caption);
+      payload.append('location', form.location);
+      payload.append('eventName', form.eventName);
+      payload.append('tags', form.tags);
+      payload.append('image', currentFile.file);
+
+      try {
+        await api.post('/photos', payload);
+        setFiles(prev => prev.map(f => f.id === currentFile.id ? { ...f, status: 'success' } : f));
+        successCount++;
+      } catch (requestError) {
+        const errMsg = getApiError(requestError, 'Upload failed.');
+        setFiles(prev => prev.map(f => f.id === currentFile.id ? { ...f, status: 'error', error: errMsg } : f));
+      }
+    }
+
+    setIsSubmitting(false);
+    
+    if (successCount === files.length) {
+      navigate('/');
+    } else if (successCount > 0) {
+      setError(`Uploaded ${successCount} photos. Some failed, please check the list.`);
     }
   }
 
@@ -87,13 +120,12 @@ export function UploadPage() {
       className="stack-lg"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0 }}
     >
       <section className="page-header">
         <div>
           <p className="eyebrow" style={{ color: 'var(--accent)', fontWeight: 700 }}>Creator workspace</p>
-          <h1 style={{ fontSize: '3rem' }}>Capture an event.</h1>
-          <p className="muted">Upload your best shots and share them with the community.</p>
+          <h1 style={{ fontSize: '3.5rem', letterSpacing: '-0.03em' }}>Bulk Upload.</h1>
+          <p className="muted">Upload your entire event reel in seconds. Cloudinary will handle the rest.</p>
         </div>
       </section>
 
@@ -101,7 +133,7 @@ export function UploadPage() {
         <form className="stack-lg" onSubmit={handleSubmit}>
           {/* Drag and Drop Zone */}
           <div className="field">
-            <span style={{ fontWeight: 600, marginBottom: '1rem', display: 'block' }}>Event Photo</span>
+            <span style={{ fontWeight: 600, marginBottom: '1rem', display: 'block' }}>Add Photos to Batch</span>
             <div
               onDragOver={onDragOver}
               onDragLeave={onDragLeave}
@@ -109,14 +141,15 @@ export function UploadPage() {
               style={{
                 position: 'relative',
                 width: '100%',
-                aspectRatio: '16 / 9',
+                minHeight: '200px',
                 borderRadius: 'var(--radius-lg)',
                 border: `2px dashed ${isDragActive ? 'var(--primary)' : 'var(--border-subtle)'}`,
                 background: isDragActive ? 'hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.05)' : 'var(--bg-main)',
                 display: 'flex',
+                flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                overflow: 'hidden',
+                padding: '2rem',
                 transition: 'all 0.2s ease',
                 cursor: 'pointer'
               }}
@@ -126,85 +159,93 @@ export function UploadPage() {
                 id="fileInput"
                 type="file"
                 accept="image/*"
+                multiple
                 style={{ display: 'none' }}
-                onChange={(e) => setFile(e.target.files?.[0] || null)}
+                onChange={(e) => addFiles(e.target.files)}
               />
-              
-              <AnimatePresence mode="wait">
-                {preview ? (
-                  <motion.div 
-                    key="preview"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    style={{ width: '100%', height: '100%' }}
-                  >
-                    <img src={preview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    <button
-                      type="button"
-                      onClick={(e) => { e.stopPropagation(); setFile(null); }}
-                      className="button button--icon glass"
-                      style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'rgba(255,0,0,0.1)', color: '#ff4444' }}
-                    >
-                      <X size={20} />
-                    </button>
-                  </motion.div>
-                ) : (
-                  <motion.div 
-                    key="dropzone"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    style={{ textAlign: 'center' }}
-                  >
-                    <div style={{ 
-                      width: '64px', 
-                      height: '64px', 
-                      borderRadius: '50%', 
-                      background: 'var(--border-subtle)', 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      justifyContent: 'center',
-                      margin: '0 auto 1.5rem',
-                      color: 'var(--primary)'
-                    }}>
-                      <Upload size={32} />
-                    </div>
-                    <p style={{ fontWeight: 600 }}>Click or drag a photo here</p>
-                    <p className="muted" style={{ fontSize: '0.85rem' }}>PNG, JPG or WebP (max. 10MB)</p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <Upload size={40} style={{ color: 'var(--primary)', marginBottom: '1rem' }} />
+              <p style={{ fontWeight: 600 }}>Click or drag multiple photos here</p>
+              <p className="muted" style={{ fontSize: '0.85rem' }}>Select as many as you want for this event.</p>
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
-            <div className="field">
-              <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Type size={16} /> <span>Photo Title</span>
-              </label>
-              <input
-                type="text"
-                value={form.title}
-                onChange={(e) => setForm(c => ({ ...c, title: e.target.value }))}
-                placeholder="e.g. Euphoric Finale"
-              />
-            </div>
+          {/* Preview Queue */}
+          <AnimatePresence>
+            {files.length > 0 && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="upload-queue"
+                style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', 
+                  gap: '1rem',
+                  padding: '1.5rem',
+                  background: 'var(--bg-main)',
+                  borderRadius: 'var(--radius-md)',
+                  border: '1px solid var(--border-subtle)'
+                }}
+              >
+                {files.map((f) => (
+                  <motion.div 
+                    key={f.id}
+                    layout
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.8, opacity: 0 }}
+                    style={{ position: 'relative', aspectRatio: '1/1', borderRadius: 'var(--radius-sm)', overflow: 'hidden' }}
+                  >
+                    <img src={f.preview} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: f.status === 'uploading' ? 0.5 : 1 }} />
+                    
+                    {f.status === 'pending' && (
+                      <button 
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); removeFile(f.id); }}
+                        style={{ position: 'absolute', top: '4px', right: '4px', background: 'rgba(0,0,0,0.5)', color: 'white', borderRadius: '50%', width: '24px', height: '24px' }}
+                      >
+                        <X size={14} />
+                      </button>
+                    )}
 
+                    {f.status === 'uploading' && (
+                      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.2)' }}>
+                        <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}>
+                          <Upload size={24} color="white" />
+                        </motion.div>
+                      </div>
+                    )}
+
+                    {f.status === 'success' && (
+                      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(34, 197, 94, 0.4)' }}>
+                        <CheckCircle2 size={24} color="white" />
+                      </div>
+                    )}
+
+                    {f.status === 'error' && (
+                      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(239, 68, 68, 0.4)' }}>
+                        <AlertCircle size={24} color="white" title={f.error} />
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div className="batch-metadata" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem', borderTop: '1px solid var(--border-subtle)', paddingTop: '2rem' }}>
             <div className="field">
               <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Sparkles size={16} /> <span>Event Name</span>
+                <Sparkles size={16} /> <span>Shared Event Name</span>
               </label>
               <input
                 type="text"
                 value={form.eventName}
                 onChange={(e) => setForm(c => ({ ...c, eventName: e.target.value }))}
-                placeholder="e.g. Ultra Music Festival"
+                placeholder="e.g. Coachella 2026"
               />
             </div>
-          </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
             <div className="field">
               <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <MapPin size={16} /> <span>Location</span>
@@ -213,33 +254,33 @@ export function UploadPage() {
                 type="text"
                 value={form.location}
                 onChange={(e) => setForm(c => ({ ...c, location: e.target.value }))}
-                placeholder="e.g. Miami, FL"
+                placeholder="e.g. Indio, CA"
               />
             </div>
 
             <div className="field">
               <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Tag size={16} /> <span>Tags</span>
+                <Tag size={16} /> <span>Tags (comma separated)</span>
               </label>
               <input
                 type="text"
                 value={form.tags}
                 onChange={(e) => setForm(c => ({ ...c, tags: e.target.value }))}
-                placeholder="music, festival, lights"
+                placeholder="music, festival, neon"
               />
             </div>
-          </div>
 
-          <div className="field">
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <AlignLeft size={16} /> <span>Caption</span>
-            </label>
-            <textarea
-              rows="4"
-              value={form.caption}
-              onChange={(e) => setForm(c => ({ ...c, caption: e.target.value }))}
-              placeholder="Tell the story behind this shot..."
-            />
+            <div className="field">
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <AlignLeft size={16} /> <span>Group Caption</span>
+              </label>
+              <textarea
+                rows="1"
+                value={form.caption}
+                onChange={(e) => setForm(c => ({ ...c, caption: e.target.value }))}
+                placeholder="A brief story for this reel..."
+              />
+            </div>
           </div>
 
           {error && (
@@ -258,13 +299,17 @@ export function UploadPage() {
             <button 
               type="submit" 
               className="button button--primary" 
-              disabled={isSubmitting}
-              style={{ padding: '1rem 3rem' }}
+              disabled={isSubmitting || !files.length}
+              style={{ padding: '1rem 4rem' }}
             >
-              {isSubmitting ? 'Uploading...' : (
+              {isSubmitting ? (
+                 <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                   Uploading {files.filter(f => f.status === 'success').length} / {files.length}...
+                 </span>
+              ) : (
                 <>
                   <CheckCircle2 size={20} />
-                  <span>Publish Photo</span>
+                  <span>Publish {files.length ? `${files.length} Photos` : 'Reel'}</span>
                 </>
               )}
             </button>

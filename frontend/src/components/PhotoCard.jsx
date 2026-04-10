@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MapPin, Calendar, MessageSquare, Star, Tag, Maximize2 } from 'lucide-react';
@@ -5,20 +6,54 @@ import { resolveAssetUrl } from '../api/client';
 import { formatDate } from '../utils/formatDate';
 
 export function PhotoCard({ photo, onExpand }) {
+  const [isLoaded, setIsLoaded] = useState(false);
+  
+  // Smart Cloudinary URLs
+  const thumbUrl = resolveAssetUrl(photo.imageUrl, { 
+    width: 600, 
+    crop: 'fill', 
+    gravity: 'auto' 
+  });
+  
+  const blurUrl = resolveAssetUrl(photo.imageUrl, { 
+    width: 30, 
+    blur: 1000, 
+    quality: 10 
+  });
+
   return (
     <motion.article 
       className="photo-card card"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
+      initial={{ opacity: 0, scale: 0.95 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true, margin: "-100px" }}
       whileHover={{ y: -8 }}
-      transition={{ duration: 0.4, ease: [0.33, 1, 0.68, 1] }}
+      transition={{ duration: 0.6, ease: [0.33, 1, 0.68, 1] }}
     >
       <div className="photo-card__media">
+        {/* Blur Placeholder */}
+        {!isLoaded && (
+          <img 
+            src={blurUrl} 
+            alt="" 
+            style={{ 
+              position: 'absolute', 
+              inset: 0, 
+              width: '100%', 
+              height: '100%', 
+              objectFit: 'cover',
+              filter: 'blur(10px)',
+              transform: 'scale(1.1)'
+            }} 
+          />
+        )}
+
         <motion.img 
-          src={resolveAssetUrl(photo.imageUrl)} 
+          src={thumbUrl} 
           alt={photo.title} 
-          whileHover={{ scale: 1.1 }}
+          onLoad={() => setIsLoaded(true)}
+          style={{ opacity: isLoaded ? 1 : 0, transition: 'opacity 0.5s ease' }}
+          whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.6 }}
         />
         
