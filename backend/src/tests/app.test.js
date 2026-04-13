@@ -59,8 +59,8 @@ describe('Fotos API', () => {
     const response = await api.get('/api/health').expect(200);
 
     assert.equal(response.body.status, 'ok');
-    assert.equal(response.body.dataProvider, 'local');
-    assert.equal(response.body.storageProvider, 'local');
+    assert.equal(response.body.services.database.provider, 'local');
+    assert.equal(response.body.services.storage.provider, 'local');
   });
 
   test('supports the creator upload and consumer interaction flow', async () => {

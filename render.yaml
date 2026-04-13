@@ -15,7 +15,7 @@ services:
       - key: DATA_PROVIDER
         value: mongo
       - key: STORAGE_PROVIDER
-        value: s3
+        value: cloudinary
       - key: CLIENT_ORIGIN
         sync: false # Needs to be the Frontend URL after first deployment
       - key: JWT_SECRET

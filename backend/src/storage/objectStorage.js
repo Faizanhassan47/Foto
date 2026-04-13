@@ -44,7 +44,9 @@ export async function ensureObjectStorage() {
     return;
   }
 
-  getS3Client();
+  if (env.storageProvider === 's3') {
+    getS3Client();
+  }
 }
 
 export function usesLocalUploads() {

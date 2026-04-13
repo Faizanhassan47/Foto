@@ -16,7 +16,10 @@ function resolveDataProvider() {
     return explicitProvider;
   }
 
-  return process.env.MONGODB_URI ? 'mongo' : 'local';
+  const uri = String(process.env.MONGODB_URI || '').trim();
+  const isPlaceholder = uri.includes('<db_password>') || uri.includes('YOUR_');
+
+  return (uri && !isPlaceholder) ? 'mongo' : 'local';
 }
 
 function resolveStorageProvider() {
@@ -28,7 +31,7 @@ function resolveStorageProvider() {
     return explicitProvider;
   }
 
-  if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY) {
+  if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
     return 'cloudinary';
   }
 

@@ -10,18 +10,16 @@ import { usesLocalUploads } from './storage/objectStorage.js';
 
 const app = express();
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      const allowedOrigins = (env.clientOrigin || '').split(',').map(o => o.trim());
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    }
-  })
-);
+// Global CORS - Allow all origins (Removing restrictions)
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -38,17 +36,17 @@ app.get('/api/health', async (_req, res) => {
     timestamp: new Date().toISOString(),
     uptime: `${Math.floor(uptime / 3600)}h ${Math.floor((uptime % 3600) / 60)}m ${Math.floor(uptime % 60)}s`,
     services: {
-      database: {
-        provider: env.dataProvider,
-        status: dbStatus,
-        latency: dbStatus === 'connected' ? 'stable' : 'n/a'
-      },
-      storage: {
-        provider: env.storageProvider,
-        status: env.storageProvider === 'cloudinary' && !env.cloudinary.apiKey ? 'error' : 'active',
-        config: env.storageProvider === 'cloudinary' ? 'cloud-configured' : 'local-configured'
-      }
+    database: {
+      provider: env.dataProvider,
+      status: dbStatus,
+      latency: dbStatus === 'connected' ? 'stable' : 'n/a'
     },
+    storage: {
+      provider: env.storageProvider,
+      status: env.storageProvider === 'cloudinary' && !env.cloudinary.apiKey ? 'error' : 'active',
+      config: env.storageProvider === 'cloudinary' ? 'cloud-configured' : 'local-configured'
+    }
+  },
     environment: env.nodeEnv,
     version: '2.5.0-ultra-premium'
   });
