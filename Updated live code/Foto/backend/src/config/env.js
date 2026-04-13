@@ -38,10 +38,7 @@ function resolveStorageProvider() {
 export const env = {
   port: Number(process.env.PORT || 4000),
   nodeEnv: process.env.NODE_ENV || 'development',
-<<<<<<< HEAD
   clientOrigin: process.env.CLIENT_ORIGIN || 'http://localhost:5173, https://foto-tau.vercel.app',
-=======
->>>>>>> 413a00b (Updated chatbot, UI, and backend logic)
   jwtSecret: process.env.JWT_SECRET || 'local-dev-secret',
   dataDir: process.env.DATA_DIR || path.join(backendRoot, 'data'),
   uploadDir: process.env.UPLOAD_DIR || path.join(backendRoot, 'uploads'),

@@ -7,14 +7,6 @@
       "passwordHash": "$2a$10$B/Bd1yMGT7O0KIxmSUBB1eKihlXM75AQlsaC5j8/43K0hZUR5suNu",
       "role": "creator",
       "createdAt": "2026-04-11T04:22:54.620Z"
-    },
-    {
-      "id": "90faa403-8697-4001-9636-3bda50266d17",
-      "name": "M Faizan",
-      "email": "wordpress.dev@gms-world.com",
-      "passwordHash": "$2a$10$PLmEn5fVSjnAPe/G6BRd7egZbDLZZqfVy.lMgzwReIeDJDZOmyyy6",
-      "role": "consumer",
-      "createdAt": "2026-04-13T04:39:05.427Z"
     }
   ],
   "photos": [
