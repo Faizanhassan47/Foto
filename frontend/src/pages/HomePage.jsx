@@ -41,7 +41,7 @@ export function HomePage() {
   const [sort, setSort] = useState('newest');
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const { photos, isLoading, error, hasMore, fetchNextPage } = useFetchPhotos('', sort);
-  
+
   const observerTarget = useRef(null);
 
   useEffect(() => {
@@ -65,24 +65,56 @@ export function HomePage() {
     };
   }, [hasMore, isLoading, fetchNextPage]);
 
+  const [toast, setToast] = useState({ message: '', type: '' });
+
+  const showToast = (message, type = 'info') => {
+    setToast({ message, type });
+    setTimeout(() => setToast({ message: '', type: '' }), 3000);
+  };
+
+  const handleUploadClick = () => {
+    if (!user) {
+      showToast('Log in to upload data');
+      return;
+    }
+    if (user?.role !== 'creator') {
+      showToast('Only creators can upload photos');
+      return;
+    }
+    navigate('/upload');
+  };
+
   function handleSearch(query) {
     navigate(query ? `/search?q=${encodeURIComponent(query)}` : '/search');
   }
 
   return (
-    <motion.div 
+    <motion.div
       className="stack-lg"
       initial="hidden"
       animate="visible"
       variants={containerVariants}
     >
+      <AnimatePresence>
+        {toast.message && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className={`toast toast--${toast.type} glass`}
+          >
+            {toast.message}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <section className="hero">
         <motion.div className="hero__copy" variants={itemVariants}>
-          <div style={{ 
-            display: 'inline-flex', 
-            alignItems: 'center', 
-            gap: '8px', 
-            background: 'var(--accent)', 
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            background: 'var(--accent)',
             color: 'white',
             padding: '4px 12px',
             borderRadius: '99px',
@@ -96,19 +128,19 @@ export function HomePage() {
           </div>
           <h1 style={{ fontWeight: 800 }}>Capture the crowd, publish the moment.</h1>
           <p className="hero__text">
-            Fotos gives creators a clean upload workflow and gives consumers a fast way to
+            Tasveer_Hubs gives creators a clean upload workflow and gives consumers a fast way to
             browse, search, comment, and rate event photos.
           </p>
-          <div className="button-row" style={{ marginTop: '2.5rem' }}>
+          <div className="hero__actions">
             <button type="button" className="button button--primary" onClick={() => navigate('/search')}>
               Explore Gallery
             </button>
             <button
               type="button"
               className="button button--ghost"
-              onClick={() => navigate(user?.role === 'creator' ? '/upload' : '/register')}
+              onClick={handleUploadClick}
             >
-              {user?.role === 'creator' ? 'Upload a photo' : 'Create an account'}
+              Upload a photo
             </button>
           </div>
         </motion.div>
@@ -119,7 +151,7 @@ export function HomePage() {
             Search the latest drops
           </h2>
           <SearchBar defaultValue="" onSearch={handleSearch} label="Jump to an event or tag..." />
-          
+
           <div className="stats-grid" style={{ marginTop: '2rem' }}>
             <div className="stat-card" style={{ background: 'var(--border-subtle)' }}>
               <div style={{ color: 'var(--primary)', marginBottom: '0.5rem' }}><ImageIcon size={20} /></div>
@@ -141,16 +173,16 @@ export function HomePage() {
       </section>
 
       <section className="stack-md">
-        <motion.div className="section-header" variants={itemVariants} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '2rem' }}>
+        <motion.div className="section-header gallery-header" variants={itemVariants}>
           <div>
             <p className="eyebrow" style={{ color: 'var(--primary)', fontWeight: 700 }}>Trending Collection</p>
-            <h2 style={{ fontSize: '2.5rem' }}>Newest photo sets</h2>
+            <h2>Newest photo sets</h2>
           </div>
 
           <div className="glass" style={{ padding: '0.5rem', borderRadius: 'var(--radius-md)', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
             <ArrowUpDown size={16} style={{ marginLeft: '0.5rem', opacity: 0.6 }} />
-            <select 
-              value={sort} 
+            <select
+              value={sort}
               onChange={(e) => setSort(e.target.value)}
               style={{ background: 'transparent', border: 'none', padding: '0.4rem 2rem 0.4rem 0.5rem', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer', color: 'inherit' }}
             >
@@ -168,7 +200,7 @@ export function HomePage() {
             <SkeletonCard />
           </div>
         ) : null}
-        
+
         {error ? <div className="card card--error">{error}</div> : null}
 
         {!isLoading && !error && !photos.length ? (
@@ -182,29 +214,29 @@ export function HomePage() {
 
         {photos.length ? (
           <>
-            <motion.div 
+            <motion.div
               className="masonry-grid"
               variants={containerVariants}
               initial="hidden"
               animate="visible"
             >
               {photos.map((photo) => (
-                <PhotoCard 
-                  key={photo.id} 
-                  photo={photo} 
+                <PhotoCard
+                  key={photo.id}
+                  photo={photo}
                   onExpand={(p) => setSelectedPhoto(p)}
                 />
               ))}
             </motion.div>
 
-            <div 
-              ref={observerTarget} 
+            <div
+              ref={observerTarget}
               style={{ height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
               {isLoading && hasMore && (
-                <motion.div 
-                  initial={{ opacity: 0 }} 
-                  animate={{ opacity: 1 }} 
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
                   style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--primary)' }}
                 >
                   <Loader2 className="animate-spin" size={24} />
@@ -216,9 +248,9 @@ export function HomePage() {
         ) : null}
       </section>
 
-      <Lightbox 
-        photo={selectedPhoto} 
-        onClose={() => setSelectedPhoto(null)} 
+      <Lightbox
+        photo={selectedPhoto}
+        onClose={() => setSelectedPhoto(null)}
       />
 
       <style>{`

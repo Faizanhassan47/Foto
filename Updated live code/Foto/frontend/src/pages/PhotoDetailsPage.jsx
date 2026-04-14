@@ -204,7 +204,7 @@ export function PhotoDetailsPage() {
       transition={{ duration: 0.4 }}
     >
       <Helmet>
-        <title>{photo.title} | Fotos Gallery</title>
+        <title>{photo.title} | Tasveer_Hubs Gallery</title>
         <meta name="description" content={photo.caption || `View this amazing photo from ${photo.eventName}`} />
         <meta property="og:title" content={photo.title} />
         <meta property="og:image" content={resolveAssetUrl(photo.imageUrl)} />

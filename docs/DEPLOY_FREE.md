@@ -1,6 +1,6 @@
-# Zero-Cost Deployment Guide (Fotos)
+# Zero-Cost Deployment Guide (Tasveer_Hubs)
 
-This guide walks you through deploying the Fotos app to a production environment for **$0/month** using Render and MongoDB Atlas.
+This guide walks you through deploying the Tasveer_Hubs app to a production environment for **$0/month** using Render and MongoDB Atlas.
 
 ## Prerequisites
 - A **GitHub** account.
@@ -15,11 +15,11 @@ This guide walks you through deploying the Fotos app to a production environment
 3. Under **Network Access**, add `0.0.0.0/0` (Allow access from anywhere).
 4. Under **Database Access**, create a user with a password.
 5. Click **Connect** > **Drivers** > **Node.js** and copy your **Connection String**.
-   - *Example*: `mongodb+srv://user:pass@cluster.xxxx.mongodb.net/fotos?retryWrites=true&w=majority`
+   - *Example*: `mongodb+srv://user:pass@cluster.xxxx.mongodb.net/Tasveer_Hubs?retryWrites=true&w=majority`
 
 ## Step 2: Push your code to GitHub
 1. Create a **Private** repository on GitHub.
-2. Push your local `Fotos` directory to the repository:
+2. Push your local `Tasveer_Hubs` directory to the repository:
    ```bash
    git add .
    git commit -m "chore: prepare for production deployment"
@@ -31,18 +31,18 @@ This guide walks you through deploying the Fotos app to a production environment
 2. Select **Blueprints** > **New Blueprint Instance**.
 3. Connect your GitHub repository.
 4. Render will automatically detect the `render.yaml` file and prepare the services:
-   - **fotos-api** (Web Service)
-   - **fotos-app** (Static Site)
+   - **Tasveer_Hubs-api** (Web Service)
+   - **Tasveer_Hubs-app** (Static Site)
 5. Under **Service Customization**, you will be prompted for Environment Variables:
    - `MONGODB_URI`: Paste your string from Step 1.
    - `JWT_SECRET`: Leave blank (Render will generate one) or enter a long random string.
    - `CLIENT_ORIGIN`: You will need to update this **after** the first deployment with your frontend URL.
 
 ## Step 4: Finalize Connectivity
-1. Once the **fotos-app** (Static Site) is deployed, copy its URL (e.g., `https://fotos-app.onrender.com`).
-2. Go to the **fotos-api** settings on Render.
+1. Once the **Tasveer_Hubs-app** (Static Site) is deployed, copy its URL (e.g., `https://Tasveer_Hubs-app.onrender.com`).
+2. Go to the **Tasveer_Hubs-api** settings on Render.
 3. Update the `CLIENT_ORIGIN` environment variable to match your frontend URL.
-4. Trigger a manual deploy of the **fotos-api** to apply the change.
+4. Trigger a manual deploy of the **Tasveer_Hubs-api** to apply the change.
 
 ---
 
@@ -51,4 +51,4 @@ This guide walks you through deploying the Fotos app to a production environment
 - **Image Uploads**: By default, this deployment is configured for AWS S3. If you haven't provided S3 credentials, the app will fall back to local storage (which resets on every deploy). For permanent free image hosting, consider switching the `STORAGE_PROVIDER` to **Cloudinary**.
 
 ---
-*Generated for the Fotos Project Deployment.*
+*Generated for the Tasveer_Hubs Project Deployment.*

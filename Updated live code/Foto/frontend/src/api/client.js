@@ -8,7 +8,7 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = window.localStorage.getItem('fotos_token');
+  const token = window.localStorage.getItem('Tasveer_Hubs_token');
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -34,13 +34,13 @@ export function resolveAssetUrl(value, options = {}) {
     const parts = value.split('/upload/');
     if (parts.length === 2) {
       let transform = 'f_auto,q_auto'; // Default best format and quality
-      
+
       if (options.width) transform += `,w_${options.width}`;
       if (options.height) transform += `,h_${options.height}`;
       if (options.crop) transform += `,c_${options.crop}`;
       if (options.gravity) transform += `,g_${options.gravity}`;
       if (options.blur) transform += `,e_blur:${options.blur}`;
-      
+
       return `${parts[0]}/upload/${transform}/${parts[1]}`;
     }
   }

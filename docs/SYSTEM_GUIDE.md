@@ -1,6 +1,6 @@
-# Fotos Premium System Guide
+# Tasveer_Hubs Premium System Guide
 
-This guide provides an overview of the "Premium" architecture and features implemented in the Fotos (formerly EventGallery) platform.
+This guide provides an overview of the "Premium" architecture and features implemented in the Tasveer_Hubs (formerly EventGallery) platform.
 
 ## 1. Design Philosophy
 The system follows a **Cloud-Native, Performance-First** approach. 
@@ -45,4 +45,4 @@ The `/api/health` endpoint provides real-time status of:
 - **CI/CD**: GitHub Actions are configured to build, test, and deploy both tiers automatically.
 
 ---
-*Created by Antigravity AI for the Fotos Project.*
+*Created by Antigravity AI for the Tasveer_Hubs Project.*

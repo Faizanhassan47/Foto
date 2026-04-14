@@ -14,7 +14,7 @@ async function start() {
   await ensureObjectStorage();
 
   app.listen(env.port, () => {
-    console.log(`Fotos backend listening on http://localhost:${env.port}`);
+    console.log(`Tasveer_Hubs backend listening on http://localhost:${env.port}`);
   });
 }
 

@@ -4,7 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import test, { after, beforeEach, describe } from 'node:test';
 
-const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'fotos-tests-'));
+const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'Tasveer_Hubs-tests-'));
 const tempDataDir = path.join(tempRoot, 'data');
 const tempUploadDir = path.join(tempRoot, 'uploads');
 
@@ -54,7 +54,7 @@ after(async () => {
   await fs.rm(tempRoot, { recursive: true, force: true });
 });
 
-describe('Fotos API', () => {
+describe('Tasveer_Hubs API', () => {
   test('returns health and active provider info', async () => {
     const response = await api.get('/api/health').expect(200);
 

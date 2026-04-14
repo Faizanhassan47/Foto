@@ -1,7 +1,7 @@
-# Fotos: Premium Cloud-Native Photo Ecology
+# Tasveer_Hubs: Premium Cloud-Native Photo Ecology
 
 ## 1. Executive Summary
-Fotos is an advanced, scalable photo-sharing ecosystem designed for event creators and consumers. Built with a "Cloud-First" philosophy, it leverages state-of-the-art technologies to provide a high-performance, immersive experience for capturing and reliving event moments.
+Tasveer_Hubs is an advanced, scalable photo-sharing ecosystem designed for event creators and consumers. Built with a "Cloud-First" philosophy, it leverages state-of-the-art technologies to provide a high-performance, immersive experience for capturing and reliving event moments.
 
 ## 2. Core Objectives
 - **Scalability**: Seamless horizontal scaling via stateless architecture and CDN integration.

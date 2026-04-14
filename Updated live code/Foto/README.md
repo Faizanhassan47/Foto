@@ -1,6 +1,6 @@
-# Fotos
+# Tasveer_Hubs
 
-Fotos is a full-stack event photo sharing app built from the project docs in `DOC/`.
+Tasveer_Hubs is a full-stack event photo sharing app built from the project docs in `DOC/`.
 
 ## Stack
 

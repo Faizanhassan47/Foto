@@ -1,13 +1,13 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
-import { 
-  Camera, 
-  Image as ImageIcon, 
-  Search, 
-  Upload, 
-  LogOut, 
-  Sun, 
+import {
+  Camera,
+  Image as ImageIcon,
+  Search,
+  Upload,
+  LogOut,
+  Sun,
   Moon,
   User
 } from 'lucide-react';
@@ -37,7 +37,7 @@ export function Layout() {
           <NavLink to="/" className="brand">
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <Camera size={28} />
-              <span>Fotos</span>
+              <span>Tasveer_Hubs</span>
             </div>
           </NavLink>
 
@@ -50,8 +50,8 @@ export function Layout() {
           </nav>
 
           <div className="nav-actions">
-            <button 
-              onClick={toggleTheme} 
+            <button
+              onClick={toggleTheme}
               className="button button--ghost button--icon"
               aria-label="Toggle theme"
             >
@@ -67,9 +67,9 @@ export function Layout() {
                   </div>
                   <small>{user.role}</small>
                 </div>
-                <button 
-                  type="button" 
-                  className="button button--ghost" 
+                <button
+                  type="button"
+                  className="button button--ghost"
                   onClick={logout}
                 >
                   <LogOut size={18} />
@@ -93,7 +93,7 @@ export function Layout() {
       </main>
 
       <footer className="footer site-shell" style={{ textAlign: 'center', padding: '4rem 0', opacity: 0.6 }}>
-        <p>&copy; {new Date().getFullYear()} Fotos. Premium event photo sharing experience.</p>
+        <p>&copy; {new Date().getFullYear()} Tasveer_Hubs. Premium event photo sharing experience.</p>
       </footer>
     </div>
   );

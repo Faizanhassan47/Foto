@@ -13,7 +13,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'https://foto-tau.vercel.app'],
+    origin: ['http://localhost:5173', 'https://Tasveer_Hub-tau.vercel.app'],
     credentials: true
   })
 );

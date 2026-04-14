@@ -1,4 +1,4 @@
-# Fotos API Specification
+# Tasveer_Hubs API Specification
 
 Base path: `/api`
 

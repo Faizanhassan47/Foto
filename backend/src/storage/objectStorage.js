@@ -59,7 +59,7 @@ async function uploadToCloudinary(file) {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       {
-        folder: 'fotos',
+        folder: 'Tasveer_Hubs',
         resource_type: 'auto',
         use_filename: true,
         unique_filename: true,

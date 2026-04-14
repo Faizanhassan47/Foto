@@ -1,7 +1,7 @@
 services:
   # Backend API (Web Service - Free Tier)
   - type: web
-    name: fotos-api
+    name: Tasveer_Hubs-api
     runtime: node
     rootDir: backend
     plan: free
@@ -33,7 +33,7 @@ services:
 
   # Frontend (Static Site - Always Free)
   - type: static
-    name: fotos-app
+    name: Tasveer_Hubs-app
     rootDir: frontend
     buildCommand: npm ci && npm run build
     staticPublishDir: dist
@@ -42,6 +42,6 @@ services:
       - key: VITE_API_URL
         fromService:
           type: web
-          name: fotos-api
+          name: Tasveer_Hubs-api
           property: host
         addition: /api

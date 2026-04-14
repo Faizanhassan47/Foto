@@ -56,7 +56,7 @@ export function RegisterPage() {
     <section className="auth-layout">
       <div className="auth-card">
         <p className="eyebrow">Get started</p>
-        <h1>Create your Fotos account</h1>
+        <h1>Create your Tasveer_Hubs account</h1>
         <p className="muted">Choose a role now. It controls what the app lets you do.</p>
 
         <form className="stack-md" onSubmit={handleSubmit}>

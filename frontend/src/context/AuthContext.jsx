@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from 'react';
 import api, { getApiError } from '../api/client';
 
-const TOKEN_KEY = 'fotos_token';
+const TOKEN_KEY = 'Tasveer_Hubs_token';
 
 export const AuthContext = createContext(null);
 

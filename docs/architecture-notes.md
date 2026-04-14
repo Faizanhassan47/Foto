@@ -1,6 +1,6 @@
-# Fotos System Architecture
+# Tasveer_Hubs System Architecture
 
-Fotos is a cloud-native platform designed for high-concurrency event photo sharing. It utilizes a three-tier architecture with pluggable persistence layers.
+Tasveer_Hubs is a cloud-native platform designed for high-concurrency event photo sharing. It utilizes a three-tier architecture with pluggable persistence layers.
 
 ## 1. System Topology
 

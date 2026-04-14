@@ -50,7 +50,7 @@ export function LoginPage() {
     <section className="auth-layout">
       <div className="auth-card">
         <p className="eyebrow">Welcome back</p>
-        <h1>Sign in to Fotos</h1>
+        <h1>Sign in to Tasveer_Hubs</h1>
         <p className="muted">Creators can upload. Consumers can browse, comment, and rate.</p>
 
         <form className="stack-md" onSubmit={handleSubmit}>

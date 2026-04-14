@@ -204,7 +204,7 @@ export function PhotoDetailsPage() {
       transition={{ duration: 0.4 }}
     >
       <Helmet>
-        <title>{photo.title} | Fotos Gallery</title>
+        <title>{photo.title} | Tasveer_Hubs Gallery</title>
         <meta name="description" content={photo.caption || `View this amazing photo from ${photo.eventName}`} />
         <meta property="og:title" content={photo.title} />
         <meta property="og:image" content={resolveAssetUrl(photo.imageUrl)} />
@@ -213,11 +213,11 @@ export function PhotoDetailsPage() {
       </Helmet>
 
       {/* ── Back bar ── */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Link to="/" className="button button--ghost" style={{ width: 'fit-content' }}>
+      <div className="detail-top-bar">
+        <Link to="/" className="button button--ghost">
           <ChevronLeft size={18} /> Back to Gallery
         </Link>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <div className="detail-actions">
           <motion.button
             className="button button--ghost"
             onClick={handleShare}

@@ -124,12 +124,12 @@ export function UploadPage() {
       <section className="page-header">
         <div>
           <p className="eyebrow" style={{ color: 'var(--accent)', fontWeight: 700 }}>Creator workspace</p>
-          <h1 style={{ fontSize: '3.5rem', letterSpacing: '-0.03em' }}>Bulk Upload.</h1>
+          <h1>Bulk Upload.</h1>
           <p className="muted">Upload your entire event reel in seconds. Cloudinary will handle the rest.</p>
         </div>
       </section>
 
-      <section className="card glass" style={{ padding: '3rem' }}>
+      <section className="card glass upload-card">
         <form className="stack-lg" onSubmit={handleSubmit}>
           {/* Drag and Drop Zone */}
           <div className="field">
