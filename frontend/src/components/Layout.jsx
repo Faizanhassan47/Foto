@@ -88,7 +88,7 @@ export function Layout() {
           <NavLink to="/" className="brand" onClick={closeMenu}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <Camera size={28} />
-              <span>Tasveer Hubs</span>
+              <span>Tasveer Hub</span>
             </div>
           </NavLink>
 
