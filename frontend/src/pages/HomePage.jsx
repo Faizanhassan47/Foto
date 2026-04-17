@@ -128,7 +128,7 @@ export function HomePage() {
           </div>
           <h1 style={{ fontWeight: 800 }}>Capture the crowd, publish the moment.</h1>
           <p className="hero__text">
-            Playwright Island gives creators a clean upload workflow and gives consumers a fast way to
+            Tasveer_Hubs gives creators a clean upload workflow and gives consumers a fast way to
             browse, search, comment, and rate event photos.
           </p>
           <div className="hero__actions">

@@ -6,7 +6,7 @@
   --primary-h: 172;
   --primary-s: 66%;
   --primary-l: 25%;
-  
+
   /* Light Mode */
   --bg-main: hsl(var(--hue), 20%, 98%);
   --bg-surface: hsla(var(--hue), 20%, 100%, 0.82);
@@ -16,18 +16,18 @@
   --primary: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
   --primary-hover: hsl(var(--primary-h), var(--primary-s), calc(var(--primary-l) - 5%));
   --accent: hsl(24, 85%, 60%);
-  
+
   /* Glass Config */
   --glass-bg: hsla(var(--hue), 20%, 100%, 0.75);
   --glass-border: hsla(var(--hue), 10%, 10%, 0.05);
   --glass-blur: 16px;
-  
+
   /* Spacing & Radius */
   --radius-sm: 0.6rem;
   --radius-md: 1rem;
   --radius-lg: 1.5rem;
   --radius-full: 9999px;
-  
+
   --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.03);
   --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.12);
@@ -52,7 +52,7 @@
   --border-subtle: hsla(var(--hue), 10%, 95%, 0.1);
   --primary: hsl(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 25%));
   --primary-hover: hsl(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 30%));
-  
+
   --glass-bg: hsla(var(--hue), 15%, 8%, 0.7);
   --glass-border: hsla(var(--hue), 10%, 95%, 0.1);
   --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.4);
@@ -66,7 +66,7 @@
 
 body {
   background: var(--bg-main);
-  background-image: 
+  background-image:
     radial-gradient(circle at 20% 20%, hsla(var(--primary-h), var(--primary-s), 50%, 0.05) 0%, transparent 40%),
     radial-gradient(circle at 80% 80%, hsla(var(--hue), 80%, 50%, 0.05) 0%, transparent 40%);
   color: var(--text-main);
@@ -74,7 +74,10 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
   font-family: var(--font-heading);
   font-weight: 600;
   line-height: 1.1;
@@ -169,7 +172,8 @@ img {
   font-size: 0.95rem;
 }
 
-.nav-link:hover, .nav-link--active {
+.nav-link:hover,
+.nav-link--active {
   color: var(--text-main);
 }
 
@@ -307,7 +311,9 @@ img {
   font-size: 0.9rem;
 }
 
-input, textarea, select {
+input,
+textarea,
+select {
   width: 100%;
   padding: 0.9rem 1.2rem;
   border-radius: var(--radius-md);
@@ -721,7 +727,7 @@ input:focus {
 .detail-skeleton__img {
   aspect-ratio: 4/5;
   border-radius: var(--radius-lg);
-  background: linear-gradient(90deg, var(--border-subtle) 25%, hsla(var(--hue),15%,50%,0.08) 50%, var(--border-subtle) 75%);
+  background: linear-gradient(90deg, var(--border-subtle) 25%, hsla(var(--hue), 15%, 50%, 0.08) 50%, var(--border-subtle) 75%);
   background-size: 800px 100%;
   animation: shimmer 1.4s infinite linear;
 }
@@ -736,7 +742,7 @@ input:focus {
 .detail-skeleton__line {
   height: 20px;
   border-radius: 4px;
-  background: linear-gradient(90deg, var(--border-subtle) 25%, hsla(var(--hue),15%,50%,0.08) 50%, var(--border-subtle) 75%);
+  background: linear-gradient(90deg, var(--border-subtle) 25%, hsla(var(--hue), 15%, 50%, 0.08) 50%, var(--border-subtle) 75%);
   background-size: 800px 100%;
   animation: shimmer 1.4s infinite linear;
 }
@@ -762,7 +768,7 @@ input:focus {
   column-gap: 2rem;
 }
 
-.masonry-grid > * {
+.masonry-grid>* {
   break-inside: avoid;
   margin-bottom: 2rem;
 }
@@ -829,7 +835,7 @@ input:focus {
     top: 5rem;
     left: 1rem;
     right: 1rem;
-    background: var(--glass-bg);
+    background: white;
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
     border: 1px solid var(--glass-border);
@@ -1126,14 +1132,43 @@ img {
 }
 
 /* Utilities */
-.stack-md { display: flex; flex-direction: column; gap: 1.5rem; }
-.stack-lg { display: flex; flex-direction: column; gap: 3rem; }
-.user-chip { display: flex; flex-direction: column; line-height: 1.2; }
-.user-chip small { color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.7rem; font-weight: 700; }
+.stack-md {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.stack-lg {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.user-chip {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.user-chip small {
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
 
 /* Dark Mode Toggle Animation */
-.theme-toggle-enter { opacity: 0; transform: scale(0.9) rotate(-10deg); }
-.theme-toggle-enter-active { opacity: 1; transform: scale(1) rotate(0); transition: all 0.3s ease; }
+.theme-toggle-enter {
+  opacity: 0;
+  transform: scale(0.9) rotate(-10deg);
+}
+
+.theme-toggle-enter-active {
+  opacity: 1;
+  transform: scale(1) rotate(0);
+  transition: all 0.3s ease;
+}
 
 /* ── Gallery grid uniform aspect ratio (#9) ── */
 .gallery-grid .photo-card__media {
@@ -1142,30 +1177,31 @@ img {
 
 /* ── Skeleton shimmer animation ── */
 @keyframes shimmer {
-  0%   { background-position: -400px 0; }
-  100% { background-position: 400px 0; }
+  0% {
+    background-position: -400px 0;
+  }
+
+  100% {
+    background-position: 400px 0;
+  }
 }
 
 .search-skeleton__img {
   aspect-ratio: 3 / 4;
-  background: linear-gradient(
-    90deg,
-    var(--border-subtle) 25%,
-    hsla(var(--hue), 15%, 50%, 0.08) 50%,
-    var(--border-subtle) 75%
-  );
+  background: linear-gradient(90deg,
+      var(--border-subtle) 25%,
+      hsla(var(--hue), 15%, 50%, 0.08) 50%,
+      var(--border-subtle) 75%);
   background-size: 800px 100%;
   animation: shimmer 1.4s infinite linear;
 }
 
 .search-skeleton__line {
   border-radius: 4px;
-  background: linear-gradient(
-    90deg,
-    var(--border-subtle) 25%,
-    hsla(var(--hue), 15%, 50%, 0.08) 50%,
-    var(--border-subtle) 75%
-  );
+  background: linear-gradient(90deg,
+      var(--border-subtle) 25%,
+      hsla(var(--hue), 15%, 50%, 0.08) 50%,
+      var(--border-subtle) 75%);
   background-size: 800px 100%;
   animation: shimmer 1.4s infinite linear;
 }
@@ -1223,8 +1259,13 @@ img {
   transform: translateY(-50%) scale(1.1);
 }
 
-.pin-modal__arrow--left  { left: 0.8rem; }
-.pin-modal__arrow--right { right: 0.8rem; }
+.pin-modal__arrow--left {
+  left: 0.8rem;
+}
+
+.pin-modal__arrow--right {
+  right: 0.8rem;
+}
 
 /* ── Photo counter pill ── */
 .pin-modal__counter {
@@ -1298,6 +1339,7 @@ img {
     text-align: center;
     gap: 3rem;
   }
+
   .hero__text {
     margin-inline: auto;
   }
@@ -1349,7 +1391,7 @@ img {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .detail-top-bar .button {
     width: 100%;
     justify-content: center;
@@ -1396,4 +1438,3 @@ img {
 body.menu-lock {
   overflow: hidden;
 }
-

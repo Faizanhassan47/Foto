@@ -8,7 +8,7 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = window.localStorage.getItem('Playwright_Island_token');
+  const token = window.localStorage.getItem('Tasveer_Hubs_token');
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;

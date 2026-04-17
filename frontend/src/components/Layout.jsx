@@ -86,7 +86,7 @@ export function Layout() {
       <header className="topbar site-shell">
         <div className="glass topbar__inner">
           <NavLink to="/" className="brand" onClick={closeMenu}>
-            Playwright Island
+            Tasveer Hub
           </NavLink>
 
           <nav className={`nav-links ${isMenuOpen ? 'nav-links--open' : ''}`}>
@@ -187,7 +187,7 @@ export function Layout() {
       </main>
 
       <footer className="footer site-shell" style={{ textAlign: 'center', padding: '4rem 0', opacity: 0.6 }}>
-        <p>&copy; {new Date().getFullYear()} Playwright Island. Premium event photo sharing experience.</p>
+        <p>&copy; {new Date().getFullYear()} Tasveer_Hub. Premium event photo sharing experience.</p>
       </footer>
     </div>
   );
