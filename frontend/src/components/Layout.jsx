@@ -86,7 +86,10 @@ export function Layout() {
       <header className="topbar site-shell">
         <div className="glass topbar__inner">
           <NavLink to="/" className="brand" onClick={closeMenu}>
-            Tasveer Hub
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Camera size={28} />
+              <span>Tasveer Hub</span>
+            </div>
           </NavLink>
 
           <nav className={`nav-links ${isMenuOpen ? 'nav-links--open' : ''}`}>
