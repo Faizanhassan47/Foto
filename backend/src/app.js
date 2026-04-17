@@ -10,7 +10,7 @@ import { usesLocalUploads } from './storage/objectStorage.js';
 
 const app = express();
 
-// Global CORS - Allow all origins (Removing restrictions)
+// Global CORS - Allow all origins
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -20,6 +20,7 @@ app.use((req, res, next) => {
   }
   next();
 });
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -36,17 +37,17 @@ app.get('/api/health', async (_req, res) => {
     timestamp: new Date().toISOString(),
     uptime: `${Math.floor(uptime / 3600)}h ${Math.floor((uptime % 3600) / 60)}m ${Math.floor(uptime % 60)}s`,
     services: {
-    database: {
-      provider: env.dataProvider,
-      status: dbStatus,
-      latency: dbStatus === 'connected' ? 'stable' : 'n/a'
+      database: {
+        provider: env.dataProvider,
+        status: dbStatus,
+        latency: dbStatus === 'connected' ? 'stable' : 'n/a'
+      },
+      storage: {
+        provider: env.storageProvider,
+        status: env.storageProvider === 'cloudinary' && !env.cloudinary.apiKey ? 'error' : 'active',
+        config: env.storageProvider === 'cloudinary' ? 'cloud-configured' : 'local-configured'
+      }
     },
-    storage: {
-      provider: env.storageProvider,
-      status: env.storageProvider === 'cloudinary' && !env.cloudinary.apiKey ? 'error' : 'active',
-      config: env.storageProvider === 'cloudinary' ? 'cloud-configured' : 'local-configured'
-    }
-  },
     environment: env.nodeEnv,
     version: '2.5.0-ultra-premium'
   });

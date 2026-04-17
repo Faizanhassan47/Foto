@@ -7,6 +7,7 @@ import api, { getApiError } from '../api/client';
 export function UploadPage() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
+    title: '',
     location: '',
     eventName: '',
     tags: '',
@@ -88,8 +89,8 @@ export function UploadPage() {
       setFiles(prev => prev.map(f => f.id === currentFile.id ? { ...f, status: 'uploading' } : f));
 
       const payload = new FormData();
-      // Use filename as title if none provided
-      payload.append('title', currentFile.file.name.replace(/\.[^/.]+$/, "")); 
+      // Use form.title if provided, otherwise filename
+      payload.append('title', form.title.trim() || currentFile.file.name.replace(/\.[^/.]+$/, "")); 
       payload.append('caption', form.caption);
       payload.append('location', form.location);
       payload.append('eventName', form.eventName);
@@ -234,6 +235,18 @@ export function UploadPage() {
           </AnimatePresence>
 
           <div className="batch-metadata" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem', borderTop: '1px solid var(--border-subtle)', paddingTop: '2rem' }}>
+            <div className="field">
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Type size={16} /> <span>Main Title (Optional)</span>
+              </label>
+              <input
+                type="text"
+                value={form.title}
+                onChange={(e) => setForm(c => ({ ...c, title: e.target.value }))}
+                placeholder="Defaults to filename..."
+              />
+            </div>
+
             <div className="field">
               <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Sparkles size={16} /> <span>Shared Event Name</span>
